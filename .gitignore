@@ -1,0 +1,63 @@
+# Environment
+.env
+.env.*
+my.env
+env/
+
+# PHP / Composer
+vendor/
+composer.lock
+
+# Uploads / user content
+uploads/
+upload/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs and runtime files
+logs/
+*.log
+*.log.*
+debug.log
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Temporary and build files
+*.tmp
+*.cache
+*.bak
+
+# Test / coverage
+coverage/
+phpunit.xml
+
+# SSH keys
+*.pem
+
+# Ignore other local env files
+.env.local
+.env.production
+.env.testing
+
+# Ignore composer vendor from accidental commits
+/vendor/
+
+# Optional: lockfiles
+package-lock.json
+yarn.lock
+_setup/
+.claude/
+START-HERE.md
+DEPLOYMENT-NOTES.md
+LAUNCH.txt
