@@ -54,7 +54,7 @@ include '../includes/header.php';
             </div>
             <div class="mt-4">
                 <button class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all" disabled>
-                    <i class="fas fa-search mr-2"></i> Search Properties (Coming Tomorrow)
+                    <i class="fas fa-search mr-2"></i> Search Properties (Coming Soon)
                 </button>
             </div>
         </div>
@@ -65,7 +65,7 @@ include '../includes/header.php';
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Properties</h2>
-        <p class="text-gray-600">Discover amazing places to stay</p>
+        <p class="text-gray-600">Discover amazing places to stay in Ghana</p>
     </div>
 
     <?php if (empty($properties)): ?>
