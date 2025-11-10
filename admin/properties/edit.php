@@ -3,32 +3,56 @@ require_once '../../includes/config.php';
 require_once '../../includes/auth.php';
 require_once '../../includes/functions.php';
 
-$user = Auth::requireRole('super_admin');
-$pageTitle = 'Add New Property';
+$user = Auth::requireRole('admin');
+$pageTitle = 'Edit Property';
+
+// Get property ID
+$propertyId = $_GET['id'] ?? null;
+
+if (!$propertyId) {
+    setFlash('error', 'Property ID is required');
+    redirect('/admin/properties.php');
+}
+
+// Get property details
+$property = db()->fetchOne('SELECT * FROM properties WHERE id = ?', [$propertyId]);
+
+if (!$property) {
+    setFlash('error', 'Property not found');
+    redirect('/admin/properties.php');
+}
+
+// Check if user has permission to edit this property
+$isSuperAdmin = $user['role'] === 'super_admin';
+if (!$isSuperAdmin && $property['manager_id'] !== $user['id']) {
+    setFlash('error', 'You do not have permission to edit this property');
+    redirect('/admin/properties.php');
+}
+
+// Get existing images
+$existingImages = db()->fetchAll(
+    'SELECT * FROM property_images WHERE property_id = ? ORDER BY display_order ASC',
+    [$propertyId]
+);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        // Generate property ID
-        $propertyId = Auth::generateId();
-
         // Handle amenities
         $amenities = isset($_POST['amenities']) ? json_encode($_POST['amenities']) : '[]';
 
         // Generate slug from title
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $_POST['title'])));
 
-        // Insert property
+        // Update property
         db()->query(
-            'INSERT INTO properties (
-                id, manager_id, title, description, property_type, status,
-                address, city, state, country, zip_code,
-                bedrooms, bathrooms, square_feet, furnished, pets_allowed, parking,
-                price_per_month, security_deposit, amenities, slug, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+            'UPDATE properties SET
+                title = ?, description = ?, property_type = ?, status = ?,
+                address = ?, city = ?, state = ?, country = ?, zip_code = ?,
+                bedrooms = ?, bathrooms = ?, square_feet = ?, furnished = ?, pets_allowed = ?, parking = ?,
+                price_per_month = ?, security_deposit = ?, amenities = ?, slug = ?, updated_at = NOW()
+             WHERE id = ?',
             [
-                $propertyId,
-                $user['id'], // manager_id is the super admin
                 sanitize($_POST['title']),
                 sanitize($_POST['description']),
                 $_POST['property_type'],
@@ -47,14 +71,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 (float)$_POST['price_per_month'],
                 isset($_POST['security_deposit']) ? (float)$_POST['security_deposit'] : null,
                 $amenities,
-                $slug
+                $slug,
+                $propertyId
             ]
         );
 
-        // Handle image uploads
+        // Handle new image uploads
         if (isset($_FILES['images']) && !empty($_FILES['images']['name'][0])) {
             $uploadedImages = [];
             $imageCount = count($_FILES['images']['name']);
+            $currentImageCount = count($existingImages);
 
             for ($i = 0; $i < $imageCount; $i++) {
                 if ($_FILES['images']['error'][$i] === UPLOAD_ERR_OK) {
@@ -73,13 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         db()->query(
                             'INSERT INTO property_images (id, property_id, image_path, display_order, created_at)
                              VALUES (?, ?, ?, ?, NOW())',
-                            [$imageId, $propertyId, $result['path'], $i]
+                            [$imageId, $propertyId, $result['path'], $currentImageCount + $i]
                         );
 
                         $uploadedImages[] = $result['path'];
 
-                        // Set first image as featured
-                        if ($i === 0) {
+                        // Set first image as featured if no featured image exists
+                        if ($currentImageCount === 0 && $i === 0) {
                             db()->query(
                                 'UPDATE properties SET featured_image = ? WHERE id = ?',
                                 [$result['path'], $propertyId]
@@ -90,13 +116,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        setFlash('success', 'Property created successfully!');
+        // Handle image deletions
+        if (isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
+            foreach ($_POST['delete_images'] as $imageId) {
+                // Get image path before deleting
+                $image = db()->fetchOne('SELECT image_path FROM property_images WHERE id = ?', [$imageId]);
+                if ($image) {
+                    // Delete from filesystem
+                    deleteImage($image['image_path']);
+                    // Delete from database
+                    db()->query('DELETE FROM property_images WHERE id = ?', [$imageId]);
+                }
+            }
+
+            // Update featured image if it was deleted
+            $remainingImages = db()->fetchAll(
+                'SELECT * FROM property_images WHERE property_id = ? ORDER BY display_order ASC LIMIT 1',
+                [$propertyId]
+            );
+            if (!empty($remainingImages)) {
+                db()->query(
+                    'UPDATE properties SET featured_image = ? WHERE id = ?',
+                    [$remainingImages[0]['image_path'], $propertyId]
+                );
+            } else {
+                db()->query('UPDATE properties SET featured_image = NULL WHERE id = ?', [$propertyId]);
+            }
+        }
+
+        setFlash('success', 'Property updated successfully!');
         redirect('/admin/properties.php');
 
     } catch (Exception $e) {
-        $error = 'Failed to create property: ' . $e->getMessage();
+        $error = 'Failed to update property: ' . $e->getMessage();
     }
 }
+
+// Parse amenities for display
+$selectedAmenities = json_decode($property['amenities'] ?? '[]', true) ?: [];
 
 include '../includes/header.php';
 ?>
@@ -106,7 +163,7 @@ include '../includes/header.php';
         <a href="/admin/properties.php" class="text-gray-600 hover:text-gray-900 mr-4">
             <i class="fas fa-arrow-left"></i>
         </a>
-        <h1 class="text-3xl font-bold text-gray-900">Add New Property</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Edit Property</h1>
     </div>
 
     <?php if (isset($error)): ?>
@@ -127,7 +184,7 @@ include '../includes/header.php';
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Property Title *</label>
-                    <input type="text" name="title" required
+                    <input type="text" name="title" required value="<?php echo htmlspecialchars($property['title']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            placeholder="e.g., Modern 2BR Apartment in Downtown">
                 </div>
@@ -136,18 +193,18 @@ include '../includes/header.php';
                     <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
                     <textarea name="description" required rows="5"
                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Describe your property in detail..."></textarea>
+                              placeholder="Describe your property in detail..."><?php echo htmlspecialchars($property['description']); ?></textarea>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Property Type *</label>
                     <select name="property_type" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="apartment">Apartment</option>
-                        <option value="house">House</option>
-                        <option value="condo">Condo</option>
-                        <option value="villa">Villa</option>
-                        <option value="studio">Studio</option>
+                        <option value="apartment" <?php echo $property['property_type'] === 'apartment' ? 'selected' : ''; ?>>Apartment</option>
+                        <option value="house" <?php echo $property['property_type'] === 'house' ? 'selected' : ''; ?>>House</option>
+                        <option value="condo" <?php echo $property['property_type'] === 'condo' ? 'selected' : ''; ?>>Condo</option>
+                        <option value="villa" <?php echo $property['property_type'] === 'villa' ? 'selected' : ''; ?>>Villa</option>
+                        <option value="studio" <?php echo $property['property_type'] === 'studio' ? 'selected' : ''; ?>>Studio</option>
                     </select>
                 </div>
 
@@ -155,10 +212,10 @@ include '../includes/header.php';
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
                     <select name="status" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                        <option value="available">Available</option>
-                        <option value="rented">Rented</option>
-                        <option value="maintenance">Maintenance</option>
-                        <option value="pending">Pending</option>
+                        <option value="available" <?php echo $property['status'] === 'available' ? 'selected' : ''; ?>>Available</option>
+                        <option value="rented" <?php echo $property['status'] === 'rented' ? 'selected' : ''; ?>>Rented</option>
+                        <option value="maintenance" <?php echo $property['status'] === 'maintenance' ? 'selected' : ''; ?>>Maintenance</option>
+                        <option value="pending" <?php echo $property['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
                     </select>
                 </div>
             </div>
@@ -174,31 +231,31 @@ include '../includes/header.php';
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
-                    <input type="text" name="address" required
+                    <input type="text" name="address" required value="<?php echo htmlspecialchars($property['address']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                    <input type="text" name="city" required
+                    <input type="text" name="city" required value="<?php echo htmlspecialchars($property['city']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">State/Province</label>
-                    <input type="text" name="state"
+                    <input type="text" name="state" value="<?php echo htmlspecialchars($property['state']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
-                    <input type="text" name="country" required
+                    <input type="text" name="country" required value="<?php echo htmlspecialchars($property['country']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Zip/Postal Code</label>
-                    <input type="text" name="zip_code"
+                    <input type="text" name="zip_code" value="<?php echo htmlspecialchars($property['zip_code']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
@@ -214,36 +271,39 @@ include '../includes/header.php';
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Bedrooms *</label>
-                    <input type="number" name="bedrooms" required min="0"
+                    <input type="number" name="bedrooms" required min="0" value="<?php echo $property['bedrooms']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Bathrooms *</label>
-                    <input type="number" name="bathrooms" required min="0"
+                    <input type="number" name="bathrooms" required min="0" value="<?php echo $property['bathrooms']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Square Feet</label>
-                    <input type="number" name="square_feet" min="0"
+                    <input type="number" name="square_feet" min="0" value="<?php echo $property['square_feet']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
 
             <div class="mt-6 space-y-3">
                 <label class="flex items-center">
-                    <input type="checkbox" name="furnished" value="1" class="w-5 h-5 text-blue-600 rounded">
+                    <input type="checkbox" name="furnished" value="1" <?php echo $property['furnished'] ? 'checked' : ''; ?>
+                           class="w-5 h-5 text-blue-600 rounded">
                     <span class="ml-3 text-gray-700">Furnished</span>
                 </label>
 
                 <label class="flex items-center">
-                    <input type="checkbox" name="pets_allowed" value="1" class="w-5 h-5 text-blue-600 rounded">
+                    <input type="checkbox" name="pets_allowed" value="1" <?php echo $property['pets_allowed'] ? 'checked' : ''; ?>
+                           class="w-5 h-5 text-blue-600 rounded">
                     <span class="ml-3 text-gray-700">Pets Allowed</span>
                 </label>
 
                 <label class="flex items-center">
-                    <input type="checkbox" name="parking" value="1" class="w-5 h-5 text-blue-600 rounded">
+                    <input type="checkbox" name="parking" value="1" <?php echo $property['parking'] ? 'checked' : ''; ?>
+                           class="w-5 h-5 text-blue-600 rounded">
                     <span class="ml-3 text-gray-700">Parking Available</span>
                 </label>
             </div>
@@ -260,6 +320,7 @@ include '../includes/header.php';
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Price per Night *</label>
                     <input type="number" name="price_per_month" required min="0" step="0.01"
+                           value="<?php echo $property['price_per_month']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                            placeholder="150.00">
                     <p class="text-xs text-gray-500 mt-1">Daily rental rate for this property</p>
@@ -268,6 +329,7 @@ include '../includes/header.php';
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Cleaning Fee (Optional)</label>
                     <input type="number" name="security_deposit" min="0" step="0.01"
+                           value="<?php echo $property['security_deposit']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                            placeholder="50.00">
                     <p class="text-xs text-gray-500 mt-1">One-time cleaning fee per stay</p>
@@ -292,6 +354,7 @@ include '../includes/header.php';
                 ?>
                     <label class="flex items-center">
                         <input type="checkbox" name="amenities[]" value="<?php echo $amenity; ?>"
+                               <?php echo in_array($amenity, $selectedAmenities) ? 'checked' : ''; ?>
                                class="w-5 h-5 text-blue-600 rounded">
                         <span class="ml-3 text-gray-700"><?php echo $amenity; ?></span>
                     </label>
@@ -299,11 +362,41 @@ include '../includes/header.php';
             </div>
         </div>
 
-        <!-- Images -->
+        <!-- Existing Images -->
+        <?php if (!empty($existingImages)): ?>
         <div>
             <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <i class="fas fa-images text-blue-600 mr-2"></i>
-                Property Images
+                Existing Images
+            </h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <?php foreach ($existingImages as $index => $image): ?>
+                    <div class="relative">
+                        <img src="<?php echo htmlspecialchars($image['image_path']); ?>"
+                             alt="Property image"
+                             class="w-full h-32 object-cover rounded-lg">
+                        <?php if ($index === 0): ?>
+                            <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                                Featured
+                            </div>
+                        <?php endif; ?>
+                        <label class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded cursor-pointer hover:bg-red-700 text-xs">
+                            <input type="checkbox" name="delete_images[]" value="<?php echo $image['id']; ?>" class="mr-1">
+                            Delete
+                        </label>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Check "Delete" to remove images when saving.</p>
+        </div>
+        <?php endif; ?>
+
+        <!-- Add New Images -->
+        <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
+                Add New Images
             </h2>
 
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -315,7 +408,7 @@ include '../includes/header.php';
                     <input type="file" name="images[]" multiple accept="image/*" class="hidden" id="imageInput"
                            onchange="previewImages(event)">
                 </label>
-                <p class="text-sm text-gray-500 mt-4">Upload up to <?php echo MAX_IMAGES_PER_PROPERTY; ?> images (JPG, PNG, WebP)</p>
+                <p class="text-sm text-gray-500 mt-4">Upload additional images (JPG, PNG, WebP)</p>
             </div>
 
             <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
@@ -327,8 +420,8 @@ include '../includes/header.php';
                 Cancel
             </a>
             <button type="submit" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                <i class="fas fa-check mr-2"></i>
-                Create Property
+                <i class="fas fa-save mr-2"></i>
+                Update Property
             </button>
         </div>
     </form>
@@ -349,8 +442,8 @@ function previewImages(event) {
             div.className = 'relative';
             div.innerHTML = `
                 <img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">
-                <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                    ${i === 0 ? 'Featured' : `Image ${i + 1}`}
+                <div class="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                    New Image ${i + 1}
                 </div>
             `;
             preview.appendChild(div);

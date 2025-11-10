@@ -37,9 +37,17 @@ function getInitials($firstName, $lastName, $email) {
 
 /**
  * Generate WhatsApp link
+ * Context-aware: Shows property-specific message if property details provided,
+ * otherwise shows generic interest message
  */
-function getWhatsAppLink($propertyTitle, $propertyId) {
-    $message = "Hi, I'm interested in $propertyTitle (ID: $propertyId)";
+function getWhatsAppLink($propertyTitle = null, $propertyId = null) {
+    // If property details are provided, use property-specific message
+    if (!empty($propertyTitle) && !empty($propertyId)) {
+        $message = "Hi, I'm interested in $propertyTitle (ID: $propertyId)";
+    } else {
+        // Generic message for non-property contexts
+        $message = "Hi, I was just on your site and I'm interested in learning more about your properties. Could you help me?";
+    }
     return "https://wa.me/" . WHATSAPP_NUMBER . "?text=" . urlencode($message);
 }
 
@@ -54,7 +62,16 @@ function getInstagramLink() {
  * Get LinkedIn link
  */
 function getLinkedInLink() {
-    return "https://linkedin.com/company/" . LINKEDIN_COMPANY;
+    // Check if LINKEDIN_COMPANY is empty or not set
+    if (empty(LINKEDIN_COMPANY)) {
+        return "#";
+    }
+    // If it already starts with http or https, return as is
+    if (strpos(LINKEDIN_COMPANY, 'http') === 0) {
+        return LINKEDIN_COMPANY;
+    }
+    // Otherwise, prepend the LinkedIn base URL
+    return "https://linkedin.com/" . LINKEDIN_COMPANY;
 }
 
 /**

@@ -38,7 +38,7 @@
                 <div>
                     <h3 class="text-lg font-bold mb-4">Connect With Us</h3>
                     <div class="flex space-x-4">
-                        <a href="<?php echo getWhatsAppLink('', ''); ?>" target="_blank" class="text-gray-400 hover:text-white text-2xl">
+                        <a href="<?php echo getWhatsAppLink(); ?>" target="_blank" class="text-gray-400 hover:text-white text-2xl">
                             <i class="fab fa-whatsapp"></i>
                         </a>
                         <a href="<?php echo getInstagramLink(); ?>" target="_blank" class="text-gray-400 hover:text-white text-2xl">
