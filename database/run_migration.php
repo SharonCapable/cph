@@ -14,8 +14,8 @@ if (APP_ENV !== 'development') {
     die('Migration can only be run in development mode or by a super admin. Please update APP_ENV in .env file temporarily.');
 }
 
-// Read the migration file
-$migrationFile = __DIR__ . '/migrations/add_expanded_booking_fields.sql';
+// Read the migration file (v2 is more robust)
+$migrationFile = __DIR__ . '/migrations/add_expanded_booking_fields_v2.sql';
 
 if (!file_exists($migrationFile)) {
     die('Migration file not found: ' . $migrationFile);
