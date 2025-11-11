@@ -223,7 +223,7 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-in *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-in <span class="text-red-600">*</span></label>
                                     <input type="date" name="check_in" id="checkInDate" required
                                            min="<?php echo date('Y-m-d'); ?>"
                                            onchange="updateCheckoutMin()"
@@ -231,7 +231,7 @@ include '../includes/header.php';
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-out *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-out <span class="text-red-600">*</span></label>
                                     <input type="date" name="check_out" id="checkOutDate" required
                                            min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
@@ -239,7 +239,7 @@ include '../includes/header.php';
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Guests *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Guests <span class="text-red-600">*</span></label>
                                 <input type="number" name="guests" required min="1" value="1"
                                        class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                             </div>
@@ -253,20 +253,20 @@ include '../includes/header.php';
                             </h4>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Full Name *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Full Name <span class="text-red-600">*</span></label>
                                 <input type="text" name="guest_full_name" required
                                        class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                             </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email <span class="text-red-600">*</span></label>
                                     <input type="email" name="guest_email" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone <span class="text-red-600">*</span></label>
                                     <input type="tel" name="phone" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
@@ -274,14 +274,14 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Date of Birth *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-600">*</span></label>
                                     <input type="date" name="guest_date_of_birth" required
                                            max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Gender *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Gender <span class="text-red-600">*</span></label>
                                     <select name="guest_gender" required
                                             class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                         <option value="">Select</option>
@@ -294,20 +294,20 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Nationality *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Nationality <span class="text-red-600">*</span></label>
                                     <input type="text" name="guest_nationality" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Passport/ID *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Passport/ID <span class="text-red-600">*</span></label>
                                     <input type="text" name="guest_passport_number" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Home Address *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Home Address <span class="text-red-600">*</span></label>
                                 <textarea name="guest_address" required rows="2"
                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"></textarea>
                             </div>
@@ -321,7 +321,7 @@ include '../includes/header.php';
                             </h4>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Purpose of Visit *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Purpose of Visit <span class="text-red-600">*</span></label>
                                 <textarea name="purpose_of_visit" required rows="2"
                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
                                           placeholder="Tourism, Business, etc."></textarea>
@@ -329,7 +329,7 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Arrival Date *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Arrival Date <span class="text-red-600">*</span></label>
                                     <input type="date" name="arrival_date" required
                                            min="<?php echo date('Y-m-d'); ?>"
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
@@ -345,7 +345,7 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Departure Date *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Departure Date <span class="text-red-600">*</span></label>
                                     <input type="date" name="departure_date" required
                                            min="<?php echo date('Y-m-d'); ?>"
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
@@ -369,13 +369,13 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Name <span class="text-red-600">*</span></label>
                                     <input type="text" name="emergency_contact_name" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Relationship *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Relationship <span class="text-red-600">*</span></label>
                                     <input type="text" name="emergency_contact_relationship" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
                                            placeholder="Parent, Spouse...">
@@ -384,7 +384,7 @@ include '../includes/header.php';
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone <span class="text-red-600">*</span></label>
                                     <input type="tel" name="emergency_contact_phone" required
                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                                 </div>
@@ -444,7 +444,7 @@ include '../includes/header.php';
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Digital Signature *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Digital Signature <span class="text-red-600">*</span></label>
                                 <input type="text" name="signature_data" required
                                        class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs font-serif"
                                        placeholder="Type your full name">

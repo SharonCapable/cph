@@ -183,21 +183,21 @@ include '../includes/header.php';
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Title *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Title<span class="text-red-600"> *</span></label>
                     <input type="text" name="title" required value="<?php echo htmlspecialchars($property['title']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                            placeholder="e.g., Modern 2BR Apartment in Downtown">
                 </div>
 
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description<span class="text-red-600"> *</span></label>
                     <textarea name="description" required rows="5"
                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Describe your property in detail..."><?php echo htmlspecialchars($property['description']); ?></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Type *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Property Type<span class="text-red-600"> *</span></label>
                     <select name="property_type" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="apartment" <?php echo $property['property_type'] === 'apartment' ? 'selected' : ''; ?>>Apartment</option>
@@ -209,7 +209,7 @@ include '../includes/header.php';
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status<span class="text-red-600"> *</span></label>
                     <select name="status" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="available" <?php echo $property['status'] === 'available' ? 'selected' : ''; ?>>Available</option>
@@ -230,13 +230,13 @@ include '../includes/header.php';
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Street Address<span class="text-red-600"> *</span></label>
                     <input type="text" name="address" required value="<?php echo htmlspecialchars($property['address']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">City<span class="text-red-600"> *</span></label>
                     <input type="text" name="city" required value="<?php echo htmlspecialchars($property['city']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
@@ -248,7 +248,7 @@ include '../includes/header.php';
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Country<span class="text-red-600"> *</span></label>
                     <input type="text" name="country" required value="<?php echo htmlspecialchars($property['country']); ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
@@ -270,13 +270,13 @@ include '../includes/header.php';
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Bedrooms *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bedrooms<span class="text-red-600"> *</span></label>
                     <input type="number" name="bedrooms" required min="0" value="<?php echo $property['bedrooms']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Bathrooms *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bathrooms<span class="text-red-600"> *</span></label>
                     <input type="number" name="bathrooms" required min="0" value="<?php echo $property['bathrooms']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
@@ -318,7 +318,7 @@ include '../includes/header.php';
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Price per Night *</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Price per Night<span class="text-red-600"> *</span></label>
                     <input type="number" name="price_per_month" required min="0" step="0.01"
                            value="<?php echo $property['price_per_month']; ?>"
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

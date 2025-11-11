@@ -27,8 +27,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result['success']) {
             $redirect = $_GET['redirect'] ?? '';
+
+            // Validate and sanitize redirect URL
             if ($redirect) {
-                redirect($redirect);
+                // Ensure redirect starts with / to prevent external redirects
+                if (strpos($redirect, '/') === 0) {
+                    // Make sure it's a valid internal path
+                    redirect($redirect);
+                } else {
+                    // Invalid redirect, use default
+                    if ($result['user']['role'] === 'admin' || $result['user']['role'] === 'super_admin') {
+                        redirect('/admin/index.php');
+                    } else {
+                        redirect('/public/index.php');
+                    }
+                }
             } else {
                 if ($result['user']['role'] === 'admin' || $result['user']['role'] === 'super_admin') {
                     redirect('/admin/index.php');

@@ -337,7 +337,7 @@ include '../includes/header.php';
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address<span class="text-red-600"> *</span></label>
                             <input type="email" name="email" required
                                    value="<?php echo $user ? htmlspecialchars($user['email']) : ''; ?>"
                                    <?php echo $user ? 'readonly' : ''; ?>
@@ -348,7 +348,7 @@ include '../includes/header.php';
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Business Type *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Business Type<span class="text-red-600"> *</span></label>
                             <select name="business_type" required
                                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                                 <option value="individual">Individual</option>
@@ -365,7 +365,7 @@ include '../includes/header.php';
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number<span class="text-red-600"> *</span></label>
                             <input type="tel" name="phone" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                    placeholder="+1234567890">
@@ -389,13 +389,13 @@ include '../includes/header.php';
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Street Address<span class="text-red-600"> *</span></label>
                             <input type="text" name="address" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">City<span class="text-red-600"> *</span></label>
                             <input type="text" name="city" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>
@@ -407,7 +407,7 @@ include '../includes/header.php';
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Country<span class="text-red-600"> *</span></label>
                             <input type="text" name="country" required
                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         </div>

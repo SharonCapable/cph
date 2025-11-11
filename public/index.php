@@ -198,7 +198,7 @@ include '../includes/header.php';
             </div>
             <div class="text-center">
                 <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-calendar-check text-green-600 text-2xl"></i>
+                    <i class="fas fa-thumbs-up text-green-600 text-2xl"></i>
                 </div>
                 <h3 class="font-bold text-gray-900 mb-2">Easy Booking</h3>
                 <p class="text-gray-600 text-sm">Simple and secure booking process</p>
