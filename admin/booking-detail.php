@@ -41,7 +41,7 @@ if (!$isSuperAdmin) {
 
 // Get property images
 $images = db()->fetchAll(
-    'SELECT * FROM property_images WHERE property_id = ? ORDER BY sort_order ASC',
+    'SELECT * FROM property_images WHERE property_id = ? ORDER BY display_order ASC',
     [$booking['property_id']]
 );
 

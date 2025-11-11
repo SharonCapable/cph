@@ -197,7 +197,7 @@ include '../includes/header.php';
         <!-- Sidebar -->
         <div class="lg:col-span-1">
             <!-- Booking Request Form -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-2xl font-bold text-gray-900 mb-6">Book This Property</h3>
 
                 <?php if (!Auth::check()): ?>
@@ -211,237 +211,251 @@ include '../includes/header.php';
                         </p>
                     </div>
                 <?php else: ?>
-                    <form action="/api/booking.php" method="POST" class="space-y-6" id="bookingForm">
+                    <form action="/api/booking.php" method="POST" class="space-y-4" id="bookingForm">
                         <input type="hidden" name="property_id" value="<?php echo $property['id']; ?>">
 
                         <!-- Basic Booking Info -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-calendar-alt text-blue-600 mr-2"></i>
                                 Booking Dates
                             </h4>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Check-in Date *</label>
-                                <input type="date" name="check_in" id="checkInDate" required
-                                       min="<?php echo date('Y-m-d'); ?>"
-                                       onchange="updateCheckoutMin()"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-in *</label>
+                                    <input type="date" name="check_in" id="checkInDate" required
+                                           min="<?php echo date('Y-m-d'); ?>"
+                                           onchange="updateCheckoutMin()"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Check-out *</label>
+                                    <input type="date" name="check_out" id="checkOutDate" required
+                                           min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Check-out Date *</label>
-                                <input type="date" name="check_out" id="checkOutDate" required
-                                       min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Number of Guests *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Guests *</label>
                                 <input type="number" name="guests" required min="1" value="1"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                       class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
                             </div>
                         </div>
 
                         <!-- Guest Information -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-user text-blue-600 mr-2"></i>
                                 Guest Information
                             </h4>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Full Name *</label>
                                 <input type="text" name="guest_full_name" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                       class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email *</label>
+                                    <input type="email" name="guest_email" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
+                                    <input type="tel" name="phone" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Date of Birth *</label>
+                                    <input type="date" name="guest_date_of_birth" required
+                                           max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Gender *</label>
+                                    <select name="guest_gender" required
+                                            class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                        <option value="">Select</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Nationality *</label>
+                                    <input type="text" name="guest_nationality" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Passport/ID *</label>
+                                    <input type="text" name="guest_passport_number" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
-                                <input type="email" name="guest_email" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                                <input type="tel" name="phone" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
-                                <input type="date" name="guest_date_of_birth" required
-                                       max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
-                                <select name="guest_gender" required
-                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nationality *</label>
-                                <input type="text" name="guest_nationality" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Passport/ID Number *</label>
-                                <input type="text" name="guest_passport_number" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Home Address *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Home Address *</label>
                                 <textarea name="guest_address" required rows="2"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"></textarea>
+                                          class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"></textarea>
                             </div>
                         </div>
 
                         <!-- Travel Information -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-plane text-blue-600 mr-2"></i>
                                 Travel Information
                             </h4>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Purpose of Visit *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Purpose of Visit *</label>
                                 <textarea name="purpose_of_visit" required rows="2"
-                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                                          placeholder="e.g., Tourism, Business, Family Visit"></textarea>
+                                          class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
+                                          placeholder="Tourism, Business, etc."></textarea>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Arrival Date *</label>
-                                <input type="date" name="arrival_date" required
-                                       min="<?php echo date('Y-m-d'); ?>"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Arrival Date *</label>
+                                    <input type="date" name="arrival_date" required
+                                           min="<?php echo date('Y-m-d'); ?>"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Flight (Optional)</label>
+                                    <input type="text" name="arrival_flight"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
+                                           placeholder="BA123">
+                                </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Arrival Flight (Optional)</label>
-                                <input type="text" name="arrival_flight"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                                       placeholder="e.g., BA123">
-                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Departure Date *</label>
+                                    <input type="date" name="departure_date" required
+                                           min="<?php echo date('Y-m-d'); ?>"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Departure Date *</label>
-                                <input type="date" name="departure_date" required
-                                       min="<?php echo date('Y-m-d'); ?>"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Departure Flight (Optional)</label>
-                                <input type="text" name="departure_flight"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                                       placeholder="e.g., BA456">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Flight (Optional)</label>
+                                    <input type="text" name="departure_flight"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
+                                           placeholder="BA456">
+                                </div>
                             </div>
                         </div>
 
                         <!-- Emergency Contact -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-phone-alt text-blue-600 mr-2"></i>
                                 Emergency Contact
                             </h4>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Contact Name *</label>
-                                <input type="text" name="emergency_contact_name" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                                    <input type="text" name="emergency_contact_name" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Relationship *</label>
+                                    <input type="text" name="emergency_contact_relationship" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
+                                           placeholder="Parent, Spouse...">
+                                </div>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Relationship *</label>
-                                <input type="text" name="emergency_contact_relationship" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                                       placeholder="e.g., Parent, Spouse, Sibling">
-                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
+                                    <input type="tel" name="emergency_contact_phone" required
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Contact Phone *</label>
-                                <input type="tel" name="emergency_contact_phone" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
-                                <input type="email" name="emergency_contact_email"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1">Email (Optional)</label>
+                                    <input type="email" name="emergency_contact_email"
+                                           class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs">
+                                </div>
                             </div>
                         </div>
 
                         <!-- Visa Requirements -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-passport text-blue-600 mr-2"></i>
                                 Visa Requirements
                             </h4>
 
-                            <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="bg-gray-50 rounded-lg p-3">
                                 <label class="flex items-start cursor-pointer">
                                     <input type="checkbox" name="is_foreigner" value="1" id="isForeignerCheck"
                                            onchange="toggleVisaLetter()"
-                                           class="mt-1 w-5 h-5 text-blue-600 rounded">
-                                    <span class="ml-3 text-sm text-gray-700">
+                                           class="mt-1 w-4 h-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-xs text-gray-700">
                                         I am a foreigner and may need visa support documents
-                                        <span class="block text-xs text-gray-500 mt-1">Check this if you need an invitation letter for visa purposes</span>
                                     </span>
                                 </label>
                             </div>
 
-                            <div id="visaLetterOption" class="hidden bg-blue-50 rounded-lg p-4">
+                            <div id="visaLetterOption" class="hidden bg-blue-50 rounded-lg p-3">
                                 <label class="flex items-start cursor-pointer">
                                     <input type="checkbox" name="requires_visa_letter" value="1"
-                                           class="mt-1 w-5 h-5 text-blue-600 rounded">
-                                    <span class="ml-3 text-sm text-gray-700">
-                                        I need a visa invitation letter
-                                        <span class="block text-xs text-gray-500 mt-1">An official invitation letter will be generated for your visa application</span>
+                                           class="mt-1 w-4 h-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-xs text-gray-700">
+                                        I need a visa invitation letter for my application
                                     </span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Declaration -->
-                        <div class="space-y-4">
-                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2">
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-gray-900 flex items-center border-b pb-2 text-sm">
                                 <i class="fas fa-file-signature text-blue-600 mr-2"></i>
                                 Declaration
                             </h4>
 
-                            <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 space-y-2">
-                                <p><strong>I hereby declare that:</strong></p>
-                                <ul class="list-disc list-inside space-y-1 ml-2">
-                                    <li>All information provided above is true and accurate</li>
-                                    <li>I agree to abide by the property rules and regulations</li>
-                                    <li>I understand the payment terms and cancellation policy</li>
-                                    <li>I will be responsible for any damages during my stay</li>
+                            <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-700">
+                                <p class="font-semibold mb-1">I hereby declare that:</p>
+                                <ul class="list-disc list-inside space-y-0.5 ml-1 text-xs">
+                                    <li>All information is true and accurate</li>
+                                    <li>I agree to property rules</li>
+                                    <li>I understand payment terms</li>
+                                    <li>I'll be responsible for damages</li>
                                 </ul>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Digital Signature (Type Your Full Name) *</label>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Digital Signature *</label>
                                 <input type="text" name="signature_data" required
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm font-serif"
-                                       placeholder="Type your full name as signature">
+                                       class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs font-serif"
+                                       placeholder="Type your full name">
                             </div>
 
-                            <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="bg-gray-50 rounded-lg p-3">
                                 <label class="flex items-start cursor-pointer">
                                     <input type="checkbox" name="terms_accepted" value="1" required
-                                           class="mt-1 w-5 h-5 text-blue-600 rounded">
-                                    <span class="ml-3 text-sm text-gray-700">
-                                        I accept the terms and conditions and confirm all information is accurate *
+                                           class="mt-0.5 w-4 h-4 text-blue-600 rounded">
+                                    <span class="ml-2 text-xs text-gray-700">
+                                        I accept terms and confirm accuracy *
                                     </span>
                                 </label>
                             </div>
@@ -449,14 +463,14 @@ include '../includes/header.php';
 
                         <!-- Additional Message -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Additional Comments (Optional)</label>
-                            <textarea name="message" rows="3"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                                      placeholder="Any special requests or questions?"></textarea>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Comments (Optional)</label>
+                            <textarea name="message" rows="2"
+                                      class="w-full px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-xs"
+                                      placeholder="Special requests?"></textarea>
                         </div>
 
                         <button type="submit"
-                                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-lg transition-all">
+                                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-lg transition-all">
                             <i class="fas fa-calendar-check mr-2"></i>
                             Submit Booking Request
                         </button>
