@@ -159,10 +159,39 @@ include 'includes/header.php';
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm">
-                            <a href="/admin/booking-detail.php?id=<?php echo $booking['id']; ?>"
-                               class="text-blue-600 hover:text-blue-900">
-                                <i class="fas fa-eye"></i> View Details
-                            </a>
+                            <div class="flex items-center space-x-2">
+                                <a href="/admin/booking-detail.php?id=<?php echo $booking['id']; ?>"
+                                   class="text-blue-600 hover:text-blue-900"
+                                   title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
+                                <?php if ($booking['status'] === 'pending'): ?>
+                                    <form method="POST" action="/api/booking-action.php" class="inline" onsubmit="return confirm('Approve this booking?');">
+                                        <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="text-green-600 hover:text-green-900" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+
+                                    <form method="POST" action="/api/booking-action.php" class="inline" onsubmit="return confirm('Reject this booking?');">
+                                        <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <form method="POST" action="/api/booking-action.php" class="inline" onsubmit="return confirm('Delete this booking permanently?');">
+                                    <input type="hidden" name="booking_id" value="<?php echo $booking['id']; ?>">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="text-gray-600 hover:text-gray-900" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     <?php if ($booking['message']): ?>
