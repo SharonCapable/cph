@@ -268,3 +268,176 @@ function sendBookingConfirmationEmail($userEmail, $userName, $propertyName, $che
 
     return sendEmail($userEmail, $subject, $body);
 }
+
+/**
+ * Send booking request received email to guest
+ * Sent immediately when a guest submits a booking request
+ */
+function sendBookingRequestGuestEmail($booking, $property) {
+    $subject = 'Booking Request Received - ' . $property['title'];
+
+    $body = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .booking-details { background: white; border: 2px solid #2563eb; padding: 20px; margin: 20px 0; border-radius: 8px; }
+            .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Booking Request Received!</h1>
+            </div>
+            <div class="content">
+                <h2>Hello ' . htmlspecialchars($booking['guest_full_name']) . '!</h2>
+
+                <p>Thank you for your booking request. We have received your application and the property manager will review it shortly.</p>
+
+                <div class="booking-details">
+                    <h3 style="margin-top: 0; color: #2563eb;">Booking Details</h3>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Property:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($property['title']) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Location:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($property['city'] . ', ' . $property['country']) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Check-in:</strong></td>
+                            <td style="padding: 8px 0;">' . date('F j, Y', strtotime($booking['check_in'])) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Check-out:</strong></td>
+                            <td style="padding: 8px 0;">' . date('F j, Y', strtotime($booking['check_out'])) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Guests:</strong></td>
+                            <td style="padding: 8px 0;">' . $booking['guests'] . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Booking ID:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($booking['id']) . '</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3>What happens next?</h3>
+                <ol style="padding-left: 20px;">
+                    <li>The property manager will review your request</li>
+                    <li>You\'ll receive a confirmation email once approved</li>
+                    <li>The manager will contact you with check-in details</li>
+                </ol>
+
+                <p>If you have any questions, feel free to contact us via WhatsApp: ' . WHATSAPP_NUMBER . '</p>
+
+                <div class="footer">
+                    <p>&copy; ' . date('Y') . ' ' . APP_NAME . '. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>';
+
+    return sendEmail($booking['guest_email'], $subject, $body);
+}
+
+/**
+ * Send booking request notification to property manager
+ * Notifies manager of new booking request
+ */
+function sendBookingRequestManagerEmail($booking, $property, $managerEmail) {
+    $subject = 'New Booking Request - ' . $property['title'];
+
+    $body = '
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+            .booking-details { background: white; border: 2px solid #10b981; padding: 20px; margin: 20px 0; border-radius: 8px; }
+            .button { display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+            .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>New Booking Request!</h1>
+            </div>
+            <div class="content">
+                <h2>You have a new booking request for ' . htmlspecialchars($property['title']) . '</h2>
+
+                <div class="booking-details">
+                    <h3 style="margin-top: 0; color: #10b981;">Guest Information</h3>
+                    <table style="width: 100%; margin-bottom: 20px;">
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Name:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($booking['guest_full_name']) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Email:</strong></td>
+                            <td style="padding: 8px 0;"><a href="mailto:' . htmlspecialchars($booking['guest_email']) . '">' . htmlspecialchars($booking['guest_email']) . '</a></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Phone:</strong></td>
+                            <td style="padding: 8px 0;"><a href="tel:' . htmlspecialchars($booking['phone']) . '">' . htmlspecialchars($booking['phone']) . '</a></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Nationality:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($booking['guest_nationality']) . '</td>
+                        </tr>
+                    </table>
+
+                    <h3 style="color: #10b981;">Booking Details</h3>
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Check-in:</strong></td>
+                            <td style="padding: 8px 0;">' . date('F j, Y', strtotime($booking['check_in'])) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Check-out:</strong></td>
+                            <td style="padding: 8px 0;">' . date('F j, Y', strtotime($booking['check_out'])) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Guests:</strong></td>
+                            <td style="padding: 8px 0;">' . $booking['guests'] . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Purpose:</strong></td>
+                            <td style="padding: 8px 0;">' . htmlspecialchars($booking['purpose_of_visit']) . '</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 0;"><strong>Total:</strong></td>
+                            <td style="padding: 8px 0; font-size: 18px; color: #10b981;"><strong>$' . number_format($booking['total_price'], 2) . '</strong></td>
+                        </tr>
+                    </table>
+                </div>' .
+                ($booking['is_foreigner'] ? '<p style="background: #fef3c7; padding: 15px; border-radius: 8px;"><strong>ℹ️ Note:</strong> This guest is a foreigner' . ($booking['requires_visa_letter'] ? ' and requires a visa invitation letter.' : '.') . '</p>' : '') . '
+
+                <div style="text-align: center;">
+                    <a href="' . APP_URL . '/admin/booking-detail.php?id=' . $booking['id'] . '" class="button">View Full Details</a>
+                </div>
+
+                <p>Please review and respond to this booking request as soon as possible.</p>
+
+                <div class="footer">
+                    <p>&copy; ' . date('Y') . ' ' . APP_NAME . '. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>';
+
+    return sendEmail($managerEmail, $subject, $body);
+}

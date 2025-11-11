@@ -2,6 +2,8 @@
 require_once '../includes/config.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
+require_once '../includes/mail.php';
+require_once '../includes/pdf_simple.php';
 
 // Require authentication
 $user = Auth::requireAuth();
@@ -160,15 +162,86 @@ try {
         ]
     );
 
-    // TODO: Generate PDF letters here (will be implemented next)
-    // - Booking request letter (always)
-    // - Visa invitation letter (if $requiresVisaLetter is true)
+    // Prepare complete booking data for PDF and email generation
+    $bookingData = [
+        'id' => $bookingId,
+        'property_id' => $propertyId,
+        'user_id' => $user['id'],
+        'check_in' => $checkIn,
+        'check_out' => $checkOut,
+        'guests' => $guests,
+        'total_price' => $totalPrice,
+        'phone' => $phone,
+        'message' => $message,
+        'guest_full_name' => $guestFullName,
+        'guest_email' => $guestEmail,
+        'guest_nationality' => $guestNationality,
+        'guest_date_of_birth' => $guestDateOfBirth,
+        'guest_gender' => $guestGender,
+        'guest_passport_number' => $guestPassportNumber,
+        'guest_address' => $guestAddress,
+        'purpose_of_visit' => $purposeOfVisit,
+        'arrival_date' => $arrivalDate,
+        'arrival_flight' => $arrivalFlight,
+        'departure_date' => $departureDate,
+        'departure_flight' => $departureFlight,
+        'emergency_contact_name' => $emergencyContactName,
+        'emergency_contact_relationship' => $emergencyContactRelationship,
+        'emergency_contact_phone' => $emergencyContactPhone,
+        'emergency_contact_email' => $emergencyContactEmail,
+        'terms_accepted' => $termsAccepted,
+        'signature_data' => $signatureData,
+        'signature_date' => date('Y-m-d'),
+        'is_foreigner' => $isForeigner,
+        'requires_visa_letter' => $requiresVisaLetter,
+        'status' => 'pending',
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+
+    // Generate booking request letter (always)
+    $bookingHTML = generateBookingRequestHTML($bookingData, $property);
+    $bookingLetterPath = saveHTMLLetter($bookingHTML, $bookingId, 'booking_request');
+
+    // Update database with booking letter path
+    db()->query(
+        'UPDATE bookings SET booking_letter_path = ? WHERE id = ?',
+        [$bookingLetterPath, $bookingId]
+    );
+
+    // Generate visa invitation letter if required
+    if ($requiresVisaLetter) {
+        $visaHTML = generateVisaInvitationHTML($bookingData, $property);
+        $visaLetterPath = saveHTMLLetter($visaHTML, $bookingId, 'visa_invitation');
+
+        // Update database with visa letter path
+        db()->query(
+            'UPDATE bookings SET visa_letter_path = ? WHERE id = ?',
+            [$visaLetterPath, $bookingId]
+        );
+    }
+
+    // Send confirmation email to guest
+    try {
+        sendBookingRequestGuestEmail($bookingData, $property);
+    } catch (Exception $e) {
+        error_log('Failed to send guest email: ' . $e->getMessage());
+    }
+
+    // Send notification email to property manager
+    try {
+        $manager = db()->fetchOne('SELECT email FROM users WHERE id = ?', [$property['manager_id']]);
+        if ($manager && $manager['email']) {
+            sendBookingRequestManagerEmail($bookingData, $property, $manager['email']);
+        }
+    } catch (Exception $e) {
+        error_log('Failed to send manager email: ' . $e->getMessage());
+    }
 
     $successMessage = 'Booking request submitted successfully! ';
     if ($requiresVisaLetter) {
-        $successMessage .= 'Your visa invitation letter will be generated and sent to you via email.';
+        $successMessage .= 'Your visa invitation letter will be generated and sent to you via email. ';
     }
-    $successMessage .= ' The property manager will contact you soon.';
+    $successMessage .= 'A confirmation email has been sent to you. The property manager will contact you soon.';
 
     setFlash('success', $successMessage);
     header('Location: /public/property.php?id=' . $propertyId);
