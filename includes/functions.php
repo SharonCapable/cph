@@ -41,9 +41,10 @@ function getInitials($firstName, $lastName, $email) {
  * otherwise shows generic interest message
  */
 function getWhatsAppLink($propertyTitle = null, $propertyId = null) {
-    // If property details are provided, use property-specific message
+    // If property details are provided, use property-specific message with link
     if (!empty($propertyTitle) && !empty($propertyId)) {
-        $message = "Hi, I'm interested in $propertyTitle (ID: $propertyId)";
+        $propertyUrl = APP_URL . "/public/property.php?id=" . $propertyId;
+        $message = "Hi, I'm interested in $propertyTitle.\n\nHere's the property link: $propertyUrl";
     } else {
         // Generic message for non-property contexts
         $message = "Hi, I was just on your site and I'm interested in learning more about your properties. Could you help me?";
