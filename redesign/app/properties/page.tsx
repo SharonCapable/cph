@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { MapPin, Bed, Bath, Search } from 'lucide-react'
@@ -12,7 +12,7 @@ import { Property } from '@/lib/types'
 import { getImageUrl } from '@/lib/utils'
 import { useSearchParams } from 'next/navigation'
 
-export default function PropertiesPage() {
+function PropertiesContent() {
   const searchParams = useSearchParams()
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
@@ -231,5 +231,13 @@ export default function PropertiesPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PropertiesContent />
+    </Suspense>
   )
 }
