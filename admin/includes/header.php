@@ -30,8 +30,8 @@ if (!isset($user)) {
                         <span class="ml-2 hidden md:inline">View Site</span>
                     </a>
 
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
+                    <div class="relative">
+                        <button onclick="toggleUserMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900">
                             <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                 <?php echo getInitials($user['firstName'], $user['lastName'], $user['email']); ?>
                             </div>
@@ -39,7 +39,7 @@ if (!isset($user)) {
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
 
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block">
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden z-50">
                             <a href="/admin/profile.php" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i> Profile
                             </a>
@@ -48,6 +48,25 @@ if (!isset($user)) {
                             </a>
                         </div>
                     </div>
+
+<script>
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('userDropdown');
+    const button = event.target.closest('button');
+    
+    if (!button || button.getAttribute('onclick') !== 'toggleUserMenu()') {
+        if (dropdown && !dropdown.classList.contains('hidden')) {
+            dropdown.classList.add('hidden');
+        }
+    }
+});
+</script>
                 </div>
             </div>
         </div>
