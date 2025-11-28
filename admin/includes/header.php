@@ -25,7 +25,7 @@ if (!isset($user)) {
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <a href="/public/index.php" class="text-gray-600 hover:text-gray-900" title="View Site">
+                    <a href="/" class="text-gray-600 hover:text-gray-900" title="View Site" target="_blank">
                         <i class="fas fa-external-link-alt"></i>
                         <span class="ml-2 hidden md:inline">View Site</span>
                     </a>

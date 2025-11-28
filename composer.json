@@ -1,0 +1,8 @@
+{
+  "name": "circlepointhomes/backend",
+  "description": "Legacy PHP backend for Circle Point Homes",
+  "type": "project",
+  "require": {
+    "php": "^8.0"
+  }
+}

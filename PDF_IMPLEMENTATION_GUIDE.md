@@ -412,7 +412,7 @@ This is less elegant but works without dependencies.
 
 ## Future Enhancements
 
-1. Email PDFs automatically to guest
+1. Email PDFs automatically to guest2
 2. Add company logo to letterhead
 3. Digital signature verification
 4. Multiple language support
